@@ -125,12 +125,14 @@ namespace Swap
             }
             //dump code section
 
-            gc.FindElement(By.Id("ndbfc0")).Click();
-            gc.FindElements(By.TagName("option"))[3].Click();
-            gc.FindElement(By.Id("updateBtnP")).Click();
+            //gc.FindElement(By.Id("ndbfc0")).Click();
+            //gc.FindElements(By.TagName("option"))[3].Click();
+            //gc.FindElement(By.Id("updateBtnP")).Click();
             System.Threading.Thread.Sleep(5000);
+
             //....dump code section ends here
 
+           
             //extracting data from the report
             try
             {
@@ -230,7 +232,9 @@ namespace Swap
                         System.Threading.Thread.Sleep(1500);
                         gc.FindElement(By.XPath("//*[@id='crCategory']")).SendKeys(Keys.Tab);
                         gc.FindElement(By.XPath("//*[@id='fkCaseTypeID']")).SendKeys("M");
-                        System.Threading.Thread.Sleep(1500);
+                        System.Threading.Thread.Sleep(2000);
+                        gc.FindElement(By.XPath("//*[@id='fkCaseTypeID']")).SendKeys(Keys.Down);
+                        System.Threading.Thread.Sleep(300);
                         gc.FindElement(By.XPath("//*[@id='fkCaseTypeID']")).SendKeys(Keys.Enter);
                         gc.FindElement(By.XPath("//*[@id='CallerName']")).SendKeys("Lightbot");
                         gc.FindElement(By.XPath("//*[@id='EmailAddress']")).SendKeys("lightbot@lightsourcehr.com");
