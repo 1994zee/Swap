@@ -10,7 +10,7 @@ namespace Emailing
     public class Email
     {
 
-        public static void SendEmail(string from, string To, string Subject, string Message, string fileName, string fileName1 = null)
+        public static void SendEmail(string from, string To, string Subject, string Message, string fileName=null, string fileName1 = null)
         {
             using (MailMessage mail = new MailMessage(from, To))
             {

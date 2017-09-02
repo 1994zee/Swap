@@ -47,16 +47,19 @@ namespace Swap
         }
         static void Main(string[] args)
         {
+            List<string> mail = new List<string>();
+            TimeSpan waitTime = new TimeSpan(0, 1, 0);
             Console.WriteLine("Bot SWAP starting...");
             List<Record> records = new List<Record>();
             List<Record> withLocation = new List<Record>();
             List<Record> withoutlocation = new List<Record>();
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string[] reporturl = { "https://cwp.clientspace.net/BusinessIntelligence/ReportViewer.aspx?rn=LightBot+Admins+Only\\AEE1+Ancillary+Risk+Fees", "https://cwp.clientspace.net/BusinessIntelligence/ReportViewer.aspx?rn=LightBot+Admins+Only\\AEE2+Ancillary+Risk+Fees", "https://cwp.clientspace.net/BusinessIntelligence/ReportViewer.aspx?rn=LightBot+Admins+Only\\WOS1+Ancillary+Risk+Fees", "https://cwp.clientspace.net/BusinessIntelligence/ReportViewer.aspx?rn=LightBot+Admins+Only\\WOS2+Ancillary+Risk+Fees" };
+            string[] reportName = { "AEE1", "AEE2", "WOS1", "WOS2" };
             int report;
             Wait:
             report = 0;
-            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("System on wait");
             Console.ForegroundColor = ConsoleColor.White;
             while (true)
@@ -67,8 +70,9 @@ namespace Swap
                     report = 0;
                     break;
                 }
+                System.Threading.Thread.Sleep(waitTime);
             }
-            
+            mail.Add("bot#1 (a.k.a SWAP) sucessfully started at " + DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("System starting up...");
             Console.ForegroundColor = ConsoleColor.White;
@@ -199,7 +203,10 @@ namespace Swap
             Console.WriteLine("Number of Importable Records: " + withLocation.Count);
             Console.WriteLine("Number of Records for cases :" + withoutlocation.Count);
             Console.WriteLine("\n\n");
-
+            mail.Add("*****Data summaray for : "+ reportName[report]+" *****");
+            mail.Add("total number of records found " +" : " + records.Count);
+            mail.Add("Number of Importable Records: " + withLocation.Count);
+            mail.Add("Number of Records for cases :" + withoutlocation.Count);
             //summary ends here
 
             //case creation
@@ -248,7 +255,9 @@ namespace Swap
                     catch
                     {
                         Exception ex = new Exception("Case create for Case #:" + r.caseNo + " , client #" + r.clientID + " failed");
+                        mail.Add("Case create for Case #:" + r.caseNo + " , client #" + r.clientID + " failed");
                         ErrorLogging(ex);
+
                     }
                 }
             }
@@ -273,6 +282,7 @@ namespace Swap
                 catch
                 {
                     Console.WriteLine("Import file creation failed.");
+                    mail.Add("Import file creation failed.");
                     goto End;
                 }
                 //....File Creation Ends here
@@ -298,6 +308,7 @@ namespace Swap
                     Exception e = new Exception("Prism Login failed !");
                     ErrorLogging(ex);
                     ErrorLogging(e);
+                    mail.Add("Prism Login failed !");
                 }
 
                 try
@@ -327,16 +338,23 @@ namespace Swap
                 }
                 catch (Exception ex)
                 {
-
+                    mail.Add("Client Bill Pending report opening failed !");
                     Exception e = new Exception("Client Bill Pending report opening failed !");
                     ErrorLogging(ex);
                     ErrorLogging(e);
                     goto End;
                 }
-                System.Threading.Thread.Sleep(1000);
-                gc.FindElement(By.XPath("//*[@id='button31v2']")).Click();
-                System.Threading.Thread.Sleep(1000);
-                String current = gc.CurrentWindowHandle;
+                try
+                {
+                    System.Threading.Thread.Sleep(1000);
+                    gc.FindElement(By.XPath("//*[@id='button31v2']")).Click();
+                    System.Threading.Thread.Sleep(1000);
+                }
+                catch
+                {
+
+                }
+                    String current = gc.CurrentWindowHandle;
                 foreach (String winHandle in gc.WindowHandles)
                 {
                     gc.SwitchTo().Window(winHandle);
@@ -461,6 +479,7 @@ namespace Swap
                 Console.ForegroundColor = ConsoleColor.DarkGreen ;
                 Console.WriteLine("Process Completed");
                 Console.ForegroundColor = ConsoleColor.White;
+                Emailing.Email.SendEmail("lightbot@lightsourcehr.com", "andreforde@usa.net", "Daily Report: "+DateTime.Now, String.Join("\n",mail));
             }
             goto Wait;
         }//main ends here 
